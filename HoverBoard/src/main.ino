@@ -1,15 +1,14 @@
 // Set the Clock
 #define F_CPU 160000000UL
 
-// Include File Path
-#include "uart.h"
-
 // Include Arduino Specific Librairy
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 
 // Include C Library
 #include <stdio.h>
+#include <stdlib.h>
 
 
 // Define US pins
@@ -18,18 +17,6 @@
 
 // Global Variables
 int timer_overflow = 0;
-
-// Create Flags Structure
-volatile struct {
-  uint8_t TX_finished:1;
-  uint8_t sample:1;
-  uint8_t mode:1;
-  uint8_t stop:1;
-//  uint8_t ADC_ready:1;
-  uint8_t T1_ovf0:2;
-  uint8_t T1_ovf1:2;
-} flags;
-
 
 // Setup Timer Overflow
 ISR(TIMER0_OVF_vect)
@@ -67,19 +54,6 @@ void Echo()
     while((TIFR1 & (1<<ICF1)) == 0);
 }
 
-// Send String to UART
-#ifdef DEBUG
-
-void sendString(uint8_t* str)
-{
-    while(!flags.TX_finished)
-    {
-        msg = str;
-        UDR0=*msg;
-        flags.TX_finished = 1;
-    }
-}
-#endif DEBUG
 
 int main()
 {   
@@ -89,17 +63,9 @@ int main()
     long count = 0; // Pulse Size Count
     double conversion = 34300/2*(1/F_CPU); // Convert From Timer to Distance
     
-    
     // Setup Output Pin
     DDRB = 0x04; // DDRB = 0000 0100
     DDRD &= ~(1<<Echo_Pin); // DDRD = 0000 0000
-
-    // Setup UART
-    #ifdef DEBUG
-        UART_init();
-        flags
-    #endif
-
     // Initialize Timer
     sei(); // Allow Global Intterupt
     TIMSK1 = (1<<TOIE1); // Enable Timer 1 Overflow Interrupt

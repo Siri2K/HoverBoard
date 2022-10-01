@@ -1,4 +1,5 @@
 // Include Library and Headers
+#include "adc.h"
 #include "uart.h"
 #include "ultrasonic.h"
 #include "infrared.h"
@@ -8,7 +9,8 @@
 int main()
 {
     // Initialize UART
-    uart_init();
+    sei();
+    uart_init();  
     flags.TX_finished = 1; 
 
     // Initialize Sensors

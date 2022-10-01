@@ -76,16 +76,15 @@ void send_reading(int16_t data, char label[], uint8_t crlf)
 void send_string(uint8_t* str)
 {
     while(!flags.TX_finished); // Wait for Other Transmission to Finish
-    uint8_t *msg;
-    msg = str;
+    uint8_t *msg = str;
 
     uint16_t i = 0;
-    do
+    while(i < strlen(msg));
     {
-        UDR0 = msg[i];
+        send_byte(msg[i]);
 		i++;
-
-    } while(str[i] != '\0');
+    } 
+    send_byte('\n');
 
     UDR0 = *msg;
     flags.TX_finished = 0;

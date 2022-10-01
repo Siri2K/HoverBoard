@@ -8,7 +8,7 @@
 
 // Declare Variables
 static const char CRLF[3]={13,10};
-static volatile uint8_t *msg, TXbuffer1[10],TXbuffer2[10];
+static volatile uint8_t TXbuffer1[10],TXbuffer2[10];
 
 // Setup Structures
 volatile struct

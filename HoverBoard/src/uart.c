@@ -18,6 +18,7 @@ void uart_init()
 
 ISR(USART_TX_vect)
 {
+    uint8_t *msg;
     msg++; //unmute ur self 
 
     if(*msg)
@@ -30,14 +31,14 @@ ISR(USART_TX_vect)
     }
 }
 
-/*
+
 void send_byte(uint8_t str)
 {
     while(!flags.TX_finished);
     flags.TX_finished = 0;
     UDR0 = str;
 }
-*/
+
 
 void send_int(int16_t data, uint8_t base, uint8_t crlf)
 {
@@ -49,6 +50,7 @@ void send_int(int16_t data, uint8_t base, uint8_t crlf)
     {
         strcat(TXbuffer1, CRLF);
     }
+    uint8_t *msg;
     msg = TXbuffer1;
     UDR0 = *msg;
 }
@@ -66,6 +68,7 @@ void send_reading(int16_t data, char label[], uint8_t crlf)
     {
         strcat(TXbuffer1, CRLF);
     }
+    uint8_t *msg;
     msg = TXbuffer1;
     UDR0 = *msg;
 }
@@ -73,6 +76,7 @@ void send_reading(int16_t data, char label[], uint8_t crlf)
 void send_string(uint8_t* str)
 {
     while(!flags.TX_finished); // Wait for Other Transmission to Finish
+    uint8_t *msg;
     msg = str;
 
     uint16_t i = 0;

@@ -1,29 +1,28 @@
 #ifndef ADC_H
 #define ADC_H
 
-// Include Librairies and Header
-#include <uart.h>
+// Include Libraries & Headers
+#include "uart.h"
+#include <avr/io.h>
 
-// Setup Structure
+// Define ADC_data Structure
 static volatile struct
 {
-    uint8_t ADC0;
-    uint8_t ADC1;
-    uint8_t ADC2;
-    uint8_t ADC3;
-    uint8_t ADC4;
-    uint8_t ADC5;
-    uint8_t ADC6;
-    uint8_t ADC7;
+    uint8_t ADC0; // Channel 0
+    uint8_t ADC1; // Channel 1
+    uint8_t ADC2; // Channel 2
+    uint8_t ADC3; // Channel 3
+    uint8_t ADC6; // Channel 6
+    uint8_t ADC7; // Channel 7
+
 } ADC_data;
 
-// Initialize Global Variables
+// Define Variables
 static volatile uint8_t ADC_sample;
-static volatile uint16_t* ADC_acc, ADC_Accumulate;
+static volatile uint16_t* ADC_acc;
 
-// Define Functions
-void adc_init(uint8_t channel, uint8_t en_IRQ); // Initialize ADC
-uint16_t adc_US(uint16_t* reading , uint8_t max_sample); // Set up ADC for US
-uint16_t adc_IR(uint16_t* reading , uint8_t max_sample); // Set up ADC for IR
-ISR(ADC_vect); // Populate ADC_data
+// Define function
+void adc_init(uint8_t channel,uint8_t en_IRQ); // Initialize ADC
+ISR(ADC_vect); // Save Reading into ADC Channel
+
 #endif

@@ -1,17 +1,12 @@
 #ifndef UART_H
 #define UART_H
 
-// Include Liraries and Headers
-#include <avr/io.h>
+// Include Libraries and Other Headers
+//#include <avr/io.h>
 #include <avr/interrupt.h>
-#include <string.h>
+#include <stdlib.h>
 
-// Declare Variables
-static const char CRLF[3]={13,10};
-static volatile uint8_t TXbuffer1[10],TXbuffer2[10],rx_buffer[128];
-static volatile uint16_t rx_count = 0;
-
-// Setup Structures
+// Define Structures
 volatile struct
 {
     uint8_t TX_finished : 1;
@@ -23,15 +18,16 @@ volatile struct
 
 } flags;
 
-// Define Functions
-void uart_init();
-ISR(USART_RX_vect);
-ISR(USART_TX_vect);
-uint16_t uart_read_count();
-uint16_t uart_read();
-void send_int(uint16_t data, uint8_t base, uint8_t crlf);
-void send_reading(uint16_t data, char label[], uint8_t crlf);
-void send_string(uint8_t* str);
-void send_byte(uint8_t str);
 
-#endif 
+/*Define Functions*/
+// Setup UART
+void uart_init(); // Intiialize UART Serial Module
+ISR(USART_TX_vect); //Transmit Vector
+
+// Convert and Send data to UART
+uint8_t* toString(uint8_t number);
+void send_byte(uint8_t byte); // Send Byte to UART
+void send_int(uint8_t number); // Send Integer to UART
+void send_string(uint8_t* str); // Send String to UART
+
+#endif

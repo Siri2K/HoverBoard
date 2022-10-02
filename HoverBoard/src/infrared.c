@@ -1,12 +1,14 @@
 #include "infrared.h"
 
-// Define Functions
+// Define Pins
+#define IR_SIG (1<<PC0)
+
 void IR_init()
 {
-    DDRC &= ~(1<<PC0);
+    DDRC &= ~IR_SIG;
 }
 
-uint16_t IR_get_distance()
+uint8_t* IR_get_distance()
 {
-    return (PINC & (1<<PC0)); // Read Attached Infrared
+    return &ADC_data.ADC0;
 }

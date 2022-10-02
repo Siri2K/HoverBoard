@@ -1,12 +1,11 @@
 #ifndef INFRARED_H
 #define INFRARED_H
 
-// Include Headers and Libraries
-#include "uart.h"
-
+// Include Libraries
+#include "adc.h"
 
 // Define Functions
 void IR_init();
-uint16_t IR_get_distance();
+uint8_t* IR_get_distance();
 
 #endif

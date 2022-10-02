@@ -1,63 +1,25 @@
-// Include Library and Headers
-#include "adc.h"
-#include "uart.h"
-#include "ultrasonic.h"
+// Include Libraries and Headers
 #include "infrared.h"
-#include <util/delay.h>
-
 
 int main()
 {
-    // Setup General Interrupt
-	sei();
-	
-	// Initialize ADC
-	adc_init(0,1);
-	
-	// Initialize UART
-	uart_init();
-    flags.TX_finished = 1;
+    // Initialize Modules
+    sei(); // Setup General Interrupt
+    uart_init(); // Initalize UART
+    adc_init(7,1); // Initialize ADC
+    
 
-    // Initialize Sensors
-    ultrasonic_init();
-    IR_init(); 
+    // Test UART
+    send_string((uint8_t*)"UART is Working\n");
+    send_int(10);
 
-    // Read String to Confirm UART is working
-    send_string("Testing UART \n");
+    // Test Infrared
+    uint8_t* ADC_ptr = IR_get_distance();
 
-    // Character Variables
-    char show_a[16];
-
-    while(true)
+    for(uint16_t i = 0; i<6; i++)
     {
-        // Use the Ultrasonic Sensor
-        trigger();
-        _delay_us(10);
-
-        // Use the ADC
-        uint8_t *ADC_ptr = &ADC_data.ADC0;
-        
-        for(uint8_t i = 1; i<2; i++)
-        {
-            if(i = 1)
-            {
-                uint8_t jmax = 1;
-                char label[] = "IR ";
-                ADC_data.ADC0 = adc_IR(pulse_data.pulse0,jmax); 
-
-            }
-            else
-            {
-                uint8_t jmax = 4;
-                char label[] = "US ";
-                ADC_data.ADC0 = adc_US(pulse_data.pulse0/58); 
-            }
-
-            for(uint8_t j = 0; j<jmax; j++)
-            {
-                send_reading(*ADC_ptr, label + "Distance = " , 1);
-            }
-        }
+        send_int(*ADC_ptr);
+        ADC_ptr++;
     }
 
     return 0;

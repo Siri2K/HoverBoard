@@ -8,18 +8,25 @@
 
 int main()
 {
-    // Initialize UART
-    sei();
-    uart_init();  
-    flags.TX_finished = 1; 
+    // Setup General Interrupt
+	sei();
+	
+	// Initialize ADC
+	adc_init(0,1);
+	
+	// Initialize UART
+	uart_init();
+    flags.TX_finished = 1;
 
     // Initialize Sensors
     ultrasonic_init();
     IR_init(); 
 
     // Read String to Confirm UART is working
-    uint8_t str[] = "Testing UART, Testing UART";
-    send_string(str);
+    send_string("Testing UART \n");
+
+    // Character Variables
+    char show_a[16];
 
     while(true)
     {
@@ -27,12 +34,30 @@ int main()
         trigger();
         _delay_us(10);
 
-        // Ultrasonic Sensor Reading
-        send_reading(pulse_data.pulse0, (char*) pulse_data.pulse0, flags.TX_finished);
+        // Use the ADC
+        uint8_t *ADC_ptr = &ADC_data.ADC0;
+        
+        for(uint8_t i = 1; i<2; i++)
+        {
+            if(i = 1)
+            {
+                uint8_t jmax = 1;
+                char label[] = "IR ";
+                ADC_data.ADC0 = adc_IR(pulse_data.pulse0,jmax); 
 
-        // Read from Infrared Sensor
-         send_reading(IR_get_distance(), (char*) pulse_data.pulse1, flags.TX_finished);
+            }
+            else
+            {
+                uint8_t jmax = 4;
+                char label[] = "US ";
+                ADC_data.ADC0 = adc_US(pulse_data.pulse0/58); 
+            }
 
+            for(uint8_t j = 0; j<jmax; j++)
+            {
+                send_reading(*ADC_ptr, label + "Distance = " , 1);
+            }
+        }
     }
 
     return 0;

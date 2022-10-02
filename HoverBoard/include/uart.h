@@ -8,7 +8,8 @@
 
 // Declare Variables
 static const char CRLF[3]={13,10};
-static volatile uint8_t TXbuffer1[10],TXbuffer2[10];
+static volatile uint8_t TXbuffer1[10],TXbuffer2[10],rx_buffer[128];
+static volatile uint16_t rx_count = 0;
 
 // Setup Structures
 volatile struct
@@ -24,9 +25,12 @@ volatile struct
 
 // Define Functions
 void uart_init();
+ISR(USART_RX_vect);
 ISR(USART_TX_vect);
-void send_int(int16_t data, uint8_t base, uint8_t crlf);
-void send_reading(int16_t data, char label[], uint8_t crlf);
+uint16_t uart_read_count();
+uint16_t uart_read();
+void send_int(uint16_t data, uint8_t base, uint8_t crlf);
+void send_reading(uint16_t data, char label[], uint8_t crlf);
 void send_string(uint8_t* str);
 void send_byte(uint8_t str);
 

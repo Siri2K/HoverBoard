@@ -26,7 +26,7 @@ void uart_init(); // Initialize UART
 void sendByte(uint8_t str); // Send Byte to UART
 ISR(USART_TX_vect); // Transmit Byte
 void sendString(uint8_t* str); // Send String to UART
-uint8_t* toString(int number); // Convert Number to String
+uint8_t* toString(int16_t number); // Convert Number to String
 void sendInt(int16_t data, uint8_t base, uint8_t crlf); // Send Number to UART
 
 

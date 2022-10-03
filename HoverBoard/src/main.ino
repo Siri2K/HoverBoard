@@ -89,9 +89,16 @@ int main()
     //Test UART
     flags.TX_finished = 1;
     sendString((uint8_t*)"UART Deployed with number : ");
+    
+    // Send with send_Int Function
     sendInt(123456789,10,1);
     sendString((uint8_t*)"\n");
 
+    // Send with sendString Function
+    sendString(toString(123456789));
+    sendString((uint8_t*)"\n");
+
+    /*
     // Get IR distance
     int distance = 0;
     int brightness = 0;
@@ -113,6 +120,7 @@ int main()
         // Next Scan
         sendString((uint8_t*)"\n");
     }
+    */
 
     return 0;
 }

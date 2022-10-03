@@ -54,15 +54,14 @@ void sendString(uint8_t* str)
     flags.TX_finished = 0;
 }
 
-/*
-uint8_t* toString(int number)
+
+uint8_t* toString(int16_t number)
 {
-    char* msg;
-    msg = sprintf(msg,"%d", number);
-    uint8_t* str = (uint8_t*)msg;
-    return str;
+    uint8_t TX_buffer[10];
+    itoa(number,TX_buffer,10);
+    return &TX_buffer;
 }
-*/
+
 
 void sendInt(int16_t data, uint8_t base, uint8_t crlf)
 {

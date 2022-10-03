@@ -1,25 +1,100 @@
-// Include Libraries and Headers
-#include "infrared.h"
+// Include Libraries
+extern "C"
+{
+    #include "uart.h"
+    #include "adc.h"
+    #include "infrared.h"
+    #include <util/delay.h>
+}
+
+// Define LED Pins
+#define D3_LED PD3
+#define Yellow_LED PB5
+
+
+// Intialize GPIO's
+void GPIO_init()
+{
+    DDRB = (1<<Yellow_LED); // Initialize LED pins
+    DDRD = (1<<D3_LED);
+    IR_init();
+}
+
+// Setup Brightness of LED based on distance
+int LEDBright(int distance)
+{
+    // Default Brightness
+    int brightness = 0;
+    PORTB &= ~((1<<D3_LED) | (1<<Yellow_LED)); // Turn off both LED's
+
+    // Determine Brightness based on Distance
+    if(distance < 15)
+    {
+        brightness = 255;
+        PORTB |= (1<<Yellow_LED); // Turn on Out_of_range LED
+        
+    }
+    else if (distance > 40)
+    {
+        brightness = 0;
+        PORTB |= (1<<Yellow_LED); // Turn on Out_of_range LED
+    }
+    else
+    {
+        brightness = 255*(40-distance)/(40-15);
+        PORTB &= (1<<Yellow_LED); // Turn off Out_of_range LED
+        LED_PWM(brightness); 
+    }
+
+    return brightness;
+}
+
+void LED_PWM(int brightness)
+{
+    int time = brightness/255*1000; // Determine LED on time
+
+    // Turn LED on for a second
+    PORTB |= (1<<D3_LED);
+    _delay_ms(time);
+    PORTB &= ~(1<<D3_LED);
+    _delay_ms(1000 - time);
+
+}
 
 int main()
 {
-    // Initialize Modules
-    sei(); // Setup General Interrupt
-    uart_init(); // Initalize UART
-    adc_init(7,1); // Initialize ADC
-    
+    // Intialize All components
+    sei(); // Enable Global Intterupt
+    GPIO_init();
+    uart_init(); // Initialize UART
+    adc_init(); // Intialize ADC
 
-    // Test UART
-    send_string((uint8_t*)"UART is Working\n");
-    send_int(10);
+    //Test UART
+    flags.TX_finished = 1;
+    sendString((uint8_t*)"UART Deployed with number : ");
+    sendString(toString(1));
+    sendString((uint8_t*)"\n");
 
-    // Test Infrared
-    uint8_t* ADC_ptr = IR_get_distance();
-
-    for(uint16_t i = 0; i<6; i++)
+    // Get IR distance
+    int distance = 0;
+    int brightness = 0;
+    while(true)
     {
-        send_int(*ADC_ptr);
-        ADC_ptr++;
+        distance = IR_getDistance(IR_getVoltage());
+        brightness = LEDBright(distance);
+
+        // Display Distance to UART
+        sendString((uint8_t*)"Distance = ");
+        sendString(toString(distance));
+        sendString((uint8_t*)"\n");
+
+        // Display ADC to UART
+        sendString((uint8_t*)"Brightness = ");
+        sendString(toString(brightness));
+        sendString((uint8_t*)"\n");
+
+        // Next Scan
+        sendString((uint8_t*)"\n");
     }
 
     return 0;

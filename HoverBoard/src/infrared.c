@@ -1,14 +1,17 @@
 #include "infrared.h"
 
-// Define Pins
-#define IR_SIG (1<<PC0)
 
 void IR_init()
 {
-    DDRC &= ~IR_SIG;
+    DDRC &= ~(1<<IR_pin);
 }
 
-uint8_t* IR_get_distance()
+float IR_getVoltage()
 {
-    return &ADC_data.ADC0;
+    return readADC(IR_pin) * 5/1023;
+}
+
+int IR_getDistance(float voltage)
+{
+    return 29.988*pow(voltage,-1.173);
 }

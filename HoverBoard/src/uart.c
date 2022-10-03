@@ -5,6 +5,10 @@
 #define BAUD 9600UL
 #define UBRR (F_CPU/(BAUD*16UL)-1)
 
+// Define Buffers
+static volatile uint8_t TX_buffer1[10] , TX_buffer2[10];
+static const char CRLF[3] = {13,10};
+
 // Define Functions
 void uart_init()
 {
@@ -42,17 +46,35 @@ void sendString(uint8_t* str)
     uint8_t i = 0;
     
     // Loop Through Each character in string
-    while(msg[i] = NULL)
+    while(msg[i] != NULL)
     {
-        send_byte(msg[i]);
+        sendByte(msg[i]);
         i++;
     }
     flags.TX_finished = 0;
 }
 
+/*
 uint8_t* toString(int number)
 {
-    char msg[] = sprintf(msg,"%d", number);
-    uint8_t* str = (uint8_t)&msg;
-    return msg;
+    char* msg;
+    msg = sprintf(msg,"%d", number);
+    uint8_t* str = (uint8_t*)msg;
+    return str;
+}
+*/
+
+void sendInt(int16_t data, uint8_t base, uint8_t crlf)
+{
+    while(!flags.TX_finished); // Wait for Other Transmission to Finish
+    flags.TX_finished = 0;
+    itoa(data, (char*)&TX_buffer1[0], base);
+
+    if(crlf)
+    {
+        strcat(TX_buffer1,CRLF);
+    }
+
+    uint8_t* msg = TX_buffer1;
+    UDR0 = *msg;
 }

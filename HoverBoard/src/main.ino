@@ -51,14 +51,31 @@ int LEDBright(int distance)
 
 void LED_PWM(int brightness)
 {
-    int time = brightness/255*1000; // Determine LED on time
+    double time = brightness/255*1000; // Determine LED on time
 
     // Turn LED on for a second
     PORTB |= (1<<D3_LED);
-    _delay_ms(time);
+    delay_ms(time);
     PORTB &= ~(1<<D3_LED);
-    _delay_ms(1000 - time);
+    delay_ms(1000-time);
 
+}
+
+// Setup Variable Delays
+void delay_ms(uint16_t count)
+{
+    for(int i = 0; i<count; i++)
+    {
+        _delay_ms(1);
+    }
+}
+
+void delay_us(uint16_t count)
+{
+    for(int i = 0; i<count; i++)
+    {
+        _delay_us(1);
+    }
 }
 
 int main()
@@ -72,7 +89,7 @@ int main()
     //Test UART
     flags.TX_finished = 1;
     sendString((uint8_t*)"UART Deployed with number : ");
-    sendString(toString(1));
+    sendInt(123456789,10,1);
     sendString((uint8_t*)"\n");
 
     // Get IR distance
@@ -85,12 +102,12 @@ int main()
 
         // Display Distance to UART
         sendString((uint8_t*)"Distance = ");
-        sendString(toString(distance));
+        sendInt(distance,10,1);
         sendString((uint8_t*)"\n");
 
         // Display ADC to UART
         sendString((uint8_t*)"Brightness = ");
-        sendString(toString(brightness));
+        sendInt(brightness,10,1);
         sendString((uint8_t*)"\n");
 
         // Next Scan

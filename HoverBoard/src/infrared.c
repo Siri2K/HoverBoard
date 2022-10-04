@@ -3,15 +3,15 @@
 
 void IR_init()
 {
-    DDRC &= ~(1<<IR_pin);
+    DDRC = 0x00;
 }
 
 float IR_getVoltage()
 {
-    return readADC(IR_pin) * 5/1023;
+    return readADC(IR_PIN) * (5.0/1023.0);
 }
 
 int IR_getDistance(float voltage)
 {
-    return 29.988*pow(voltage,-1.173);
+    return 29.988*(pow(voltage,-1.173));
 }

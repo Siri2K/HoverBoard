@@ -4,9 +4,10 @@
 // Include Libraries
 #include "adc.h"
 #include "uart.h"
+#include <stdlib.h>
 
 // Define IR pins
-#define IR_pin PC0
+#define IR_PIN PC0
 
 // Declare Functions
 void IR_init(); // Intialize Infrared

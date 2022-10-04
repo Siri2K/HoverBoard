@@ -9,6 +9,11 @@
 // Include Global Variable
 static volatile uint8_t* msg;
 
+// Define UART Parameters
+#define F_CPU 16000000UL
+#define BAUD 9600UL
+#define UBRR (F_CPU/((BAUD)*(16UL))-1)
+
 // Define Structures
 volatile struct
 {
@@ -26,8 +31,7 @@ void uart_init(); // Initialize UART
 void sendByte(uint8_t str); // Send Byte to UART
 ISR(USART_TX_vect); // Transmit Byte
 void sendString(uint8_t* str); // Send String to UART
-uint8_t* toString(int16_t number); // Convert Number to String
-void sendInt(int16_t data, uint8_t base, uint8_t crlf); // Send Number to UART
+void sendInt(int16_t data); // Send Number to UART
 
 
 #endif

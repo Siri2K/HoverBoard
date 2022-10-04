@@ -9,13 +9,12 @@ extern "C"
 
 // Define LED Pins
 #define D3_LED PD3
-#define Yellow_LED PB5
-
+#define YELLOW_LED PB5
 
 // Intialize GPIO's
 void GPIO_init()
 {
-    DDRB = (1<<Yellow_LED); // Initialize LED pins
+    DDRB = (1<<YELLOW_LED); // Initialize LED pins
     DDRD = (1<<D3_LED);
     IR_init();
 }
@@ -25,24 +24,24 @@ int LEDBright(int distance)
 {
     // Default Brightness
     int brightness = 0;
-    PORTB &= ~((1<<D3_LED) | (1<<Yellow_LED)); // Turn off both LED's
+    PORTB &= ~((1<<D3_LED) | (1<<YELLOW_LED)); // Turn off both LED's
 
     // Determine Brightness based on Distance
     if(distance < 15)
     {
         brightness = 255;
-        PORTB |= (1<<Yellow_LED); // Turn on Out_of_range LED
+        PORTB |= (1<<YELLOW_LED); // Turn on Out_of_range LED
         
     }
     else if (distance > 40)
     {
         brightness = 0;
-        PORTB |= (1<<Yellow_LED); // Turn on Out_of_range LED
+        PORTB |= (1<<YELLOW_LED); // Turn on Out_of_range LED
     }
     else
     {
         brightness = 255*(40-distance)/(40-15);
-        PORTB &= (1<<Yellow_LED); // Turn off Out_of_range LED
+        PORTB &= (1<<YELLOW_LED); // Turn off Out_of_range LED
         LED_PWM(brightness); 
     }
 
@@ -88,39 +87,33 @@ int main()
 
     //Test UART
     flags.TX_finished = 1;
-    sendString((uint8_t*)"UART Deployed with number : ");
+    sendString((uint8_t*)"UART Deployed \n");
     
-    // Send with send_Int Function
-    sendInt(123456789,10,1);
-    sendString((uint8_t*)"\n");
-
-    // Send with sendString Function
-    sendString(toString(123456789));
-    sendString((uint8_t*)"\n");
-
-    /*
     // Get IR distance
-    int distance = 0;
-    int brightness = 0;
+    uint16_t ADC_val = 0; // ADC_val
+    int distance = 0; // Distance from Sensor
+    int brightness = 0; // LED Brightness
+
     while(true)
     {
-        distance = IR_getDistance(IR_getVoltage());
-        brightness = LEDBright(distance);
+        ADC_val = readADC(IR_PIN); // Get IR ADC
+        distance = IR_getDistance(IR_getVoltage()); // GET Distance from Sensor
+        brightness = LEDBright(distance); // Determine LED Brightness
+
+        // Display ADC_val to UART
+        sendString((uint8_t*)"ADC = ");
+        sendInt(ADC_val);
+        sendString((uint8_t*)"\n");
 
         // Display Distance to UART
         sendString((uint8_t*)"Distance = ");
-        sendInt(distance,10,1);
-        sendString((uint8_t*)"\n");
-
-        // Display ADC to UART
-        sendString((uint8_t*)"Brightness = ");
-        sendInt(brightness,10,1);
-        sendString((uint8_t*)"\n");
+        sendInt(distance);
+        sendString((uint8_t*)"cm\n");
 
         // Next Scan
         sendString((uint8_t*)"\n");
     }
-    */
+    
 
     return 0;
 }

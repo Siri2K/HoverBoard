@@ -4,6 +4,7 @@ extern "C"
     #include "uart.h"
     #include "adc.h"
     #include "infrared.h"
+    #include "ultrasonic.h"
     #include <util/delay.h>
 }
 
@@ -11,12 +12,31 @@ extern "C"
 #define D3_LED PD3
 #define YELLOW_LED PB5
 
+// Sensor Choice
+#define sensor_choice 1 // 1: IR range Finder , 2: US sensor
+
 // Intialize GPIO's
 void GPIO_init()
 {
-    DDRB = (1<<YELLOW_LED); // Initialize LED pins
-    DDRD = (1<<D3_LED);
-    IR_init();
+    DDRB |= (1<<YELLOW_LED); // Initialize LED pins
+    DDRD |= (1<<D3_LED);
+
+    switch(sensor_choice)
+    {
+        case 1:
+        {
+            IR_init(); // Initialize IR sensor
+        }
+
+        case 2:
+        {
+            US_init(); // Initialize US sensor
+        }
+        default:
+        {
+           IR_init(); // Initialize IR sensor by default
+        }
+    } 
 }
 
 // Setup Brightness of LED based on distance
@@ -96,8 +116,28 @@ int main()
 
     while(true)
     {
-        ADC_val = readADC(IR_PIN); // Get IR ADC
-        distance = IR_getDistance(IR_getVoltage()); // GET Distance from Sensor
+        switch(sensor_choice)
+        {
+            case 1:
+            {
+                ADC_val = readADC(IR_PIN); // Get IR ADC
+                distance = IR_getDistance(IR_getVoltage()); // GET Distance from Sensor
+            }
+
+            case 2:
+            {
+                trigger();
+                delay_us(10);
+                ADC_val =  US_getPulse(); // Get US ADC
+                distance = US_getDistance(ADC_val); // GET Distance from Sensor
+            }
+
+            default : 
+            {
+                ADC_val = readADC(IR_PIN); // Get IR ADC
+                distance = IR_getDistance(IR_getVoltage()); // GET Distance from Sensor
+            }
+        } 
         brightness = LEDBright(distance); // Determine LED Brightness
 
         // Display ADC_val to UART
@@ -111,6 +151,7 @@ int main()
         sendString((uint8_t*)"cm\n");
 
         // Next Scan
+        delay_ms(50);
         sendString((uint8_t*)"\n");
     }
     

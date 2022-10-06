@@ -7,6 +7,7 @@
 //#include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdlib.h>
+#include <avr/wdt.h>
 
 // Define Pins
 #define TRIGGER_PIN PB3
@@ -33,8 +34,8 @@ static volatile struct
 // Declare functions
 void US_init(); // Initialize Ultrasonic Sensor
 void trigger(); // Trigger Pulse
-ISR(INT1_vect); // Get Echo Pulse 
+ISR(INT0_vect); // Get Echo Pulse 
 uint16_t US_getPulse(); // Get Timing Pulse
-int US_getDistance(uint16_t pulse); // Get Distance from US
+int US_getDistance(); // Get Distance from US
 
 #endif

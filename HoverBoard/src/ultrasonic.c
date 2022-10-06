@@ -6,8 +6,13 @@ void US_init()
     DDRB |= (1<<TRIGGER_PIN); // Trigger Pin is set to output
     DDRD &= (1<<ECHO_PIN); // Echo pin is Input
 
+    // Intialize Pins
+    PORTB &= ~(1<<TRIGGER_PIN);
+    PORTD |= (1<<ECHO_PIN);
+
     // Setup Timer Interrupt
-    EIMSK |= (1<<INT0); // Interrupt on INT0 enabled
+    
+    EIMSK |= (1<<INT0) ; // Interrupt on INT0 enabled
     EICRA |= (1<<ISC00); // Interrupt on Rising and Falling Edges
 
     // Setup Timer 0
@@ -17,13 +22,22 @@ void US_init()
     OCR0B = 0;
     TCCR0B |= (1<<CS01)|(1<<CS00);
 
+    // Setup TImer 1
+    TCCR1A |= (1<<COM1A1)|(1<<COM1B1); // Clear on Compare Match
+    TCCR1A |= (1<<WGM13); // PWM, phase Correct
+    ICR1 = PWM_TOP;
+    OCR1A = 0;
+    OCR1B = 0;
+    TCCR1B |= (1<<CS11)|(1<<CS10);
+    TIMSK1 |= (1<<ICIE1) | (1<<OCIE1A); // Enable Timer interrupt    
+
 }
 
 void trigger()
 {
     PORTB |= (1<<TRIGGER_PIN); // Trigger Pin High
-    _delay_us(10);
-    PORTB &= (1<<TRIGGER_PIN); // Trigger Pin Low
+    _delay_us(11);
+    PORTB &= ~(1<<TRIGGER_PIN); // Trigger Pin Low
 }
 
 ISR(INT0_vect)
@@ -62,7 +76,7 @@ uint16_t US_getPulse()
     return pulse_data.pulse0; // Get pulse in s
 }
 
-int US_getDistance(uint16_t pulse)
+int US_getDistance()
 {
-    return pulse/58; // Get distance in cm/us
+    return US_getPulse()/58; // Get distance in cm/us
 }

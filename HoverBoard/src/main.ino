@@ -18,25 +18,10 @@ extern "C"
 // Intialize GPIO's
 void GPIO_init()
 {
+    cli(); // Stop Intterupts
     DDRB |= (1<<YELLOW_LED); // Initialize LED pins
     DDRD |= (1<<D3_LED);
-
-    switch(sensor_choice)
-    {
-        case 1:
-        {
-            IR_init(); // Initialize IR sensor
-        }
-
-        case 2:
-        {
-            US_init(); // Initialize US sensor
-        }
-        default:
-        {
-           IR_init(); // Initialize IR sensor by default
-        }
-    } 
+    sei(); // Start General Interupts
 }
 
 // Setup Brightness of LED based on distance
@@ -100,7 +85,6 @@ void delay_us(uint16_t count)
 int main()
 {
     // Intialize All components
-    sei(); // Enable Global Intterupt
     GPIO_init();
     uart_init(); // Initialize UART
     adc_init(); // Intialize ADC
@@ -109,52 +93,61 @@ int main()
     flags.TX_finished = 1;
     sendString((uint8_t*)"UART Deployed \n");
     
-    // Get IR distance
-    uint16_t ADC_val = 0; // ADC_val
-    int distance = 0; // Distance from Sensor
-    int brightness = 0; // LED Brightness
-
-    while(true)
+    // Run based on Sensor
+    switch(sensor_choice)
     {
-        switch(sensor_choice)
+        case 1: // IR Sensor
         {
-            case 1:
-            {
-                ADC_val = readADC(IR_PIN); // Get IR ADC
-                distance = IR_getDistance(IR_getVoltage()); // GET Distance from Sensor
-            }
+            //Intialize Infrared
+            IR_init();
 
-            case 2:
+            // Display Data
+            while(true)
             {
+                // Send ADC Value
+                sendString((uint8_t*)"ADC = ");
+                sendInt(IR_getADC());
+
+                // Send Distance
+                sendString((uint8_t*)"Distance (in cm) = ");
+                sendInt(IR_getDistance());
+
+                // Add Space from Previous Reading
+                sendString((uint8_t*)"\n\n");
+            }
+            break;
+        }
+
+        case 2: // US Sensor
+        {
+            //Intialize Infrared
+            US_init();
+
+            // Display Data
+            while(true)
+            {
+                // Cycle Trigger Pulse
                 trigger();
-                delay_us(10);
-                ADC_val =  US_getPulse(); // Get US ADC
-                distance = US_getDistance(ADC_val); // GET Distance from Sensor
+                _delay_us(11);
+
+                // Send Pulse  Value
+                sendString((uint8_t*)"Pulse = ");
+                sendInt(US_getPulse());
+
+                // Send Distance
+                sendString((uint8_t*)"Distance (in cm) = ");
+                sendInt(US_getDistance());
+
+                // Add Space from Previous Reading
+                sendString((uint8_t*)"\n\n");
             }
-
-            default : 
-            {
-                ADC_val = readADC(IR_PIN); // Get IR ADC
-                distance = IR_getDistance(IR_getVoltage()); // GET Distance from Sensor
-            }
-        } 
-        brightness = LEDBright(distance); // Determine LED Brightness
-
-        // Display ADC_val to UART
-        sendString((uint8_t*)"ADC = ");
-        sendInt(ADC_val);
-        sendString((uint8_t*)"\n");
-
-        // Display Distance to UART
-        sendString((uint8_t*)"Distance = ");
-        sendInt(distance);
-        sendString((uint8_t*)"cm\n");
-
-        // Next Scan
-        delay_ms(50);
-        sendString((uint8_t*)"\n");
+            break;
+        }
+        default: // Not the Part of Choice
+        {
+            sendString((uint8_t*)"Sensor not Chosen");
+        }
     }
     
-
     return 0;
 }

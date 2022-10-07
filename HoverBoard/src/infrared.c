@@ -16,7 +16,7 @@ float IR_getVoltage()
     return IR_getADC() * (5.0/1023.0);
 }
 
-int IR_getDistance(float voltage)
+int IR_getDistance()
 {
     return 29.988*(pow(IR_getVoltage(),-1.173));
 }

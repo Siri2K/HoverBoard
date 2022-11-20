@@ -62,13 +62,12 @@ void TEST_SERVO()
 {
   // Start Direction
   SERVO_turn(90);
-  _delay_ms(1000);
 
   // Go Between Left And Right
   SERVO_turn(0);
   SERVO_turn(180);
   SERVO_turn(45);
-  SERVO_turn(35);
+  SERVO_turn(135);
 
   // End Direction
   SERVO_turn(90);

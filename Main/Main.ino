@@ -6,14 +6,16 @@ extern "C"
   #include "adc.h"
   #include "infrared.h"
   #include "fan.h"
+  #include "servo.h"
 }
 
 // Initialize Components
 void GPIO_init()
 {
   cli(); // Disable General Intterupt
-  FAN_init();
+  FAN_init(); // Intialize Fan
   IR_init(); // Intialize IR
+  SERVO_init(); // Initialize Servo Motor
   sei(); // Enable General Intterupt
 }
 
@@ -43,16 +45,34 @@ void TEST_IR()
 
 void TEST_FAN()
 {
-  LIFT_FAN_PWR(true);
+  LIFT_FAN_pwr(true);
 
   // Check Drive Fan
-  DRIVE_FAN_PWR(15);
-  DRIVE_FAN_PWR(165);  
-  DRIVE_FAN_PWR(240);  
-  DRIVE_FAN_PWR(150);  
-  DRIVE_FAN_PWR(0);    
+  DRIVE_FAN_pwr(15);
+  DRIVE_FAN_pwr(165);  
+  DRIVE_FAN_pwr(240);
+  DRIVE_FAN_pwr(150);    
+  DRIVE_FAN_pwr(0);
 
-  LIFT_FAN_PWR(false);
+  // Turn Off Fan
+  LIFT_FAN_pwr(false);
+}
+
+void TEST_SERVO()
+{
+  // Start Direction
+  SERVO_turn(90);
+  _delay_ms(1000);
+
+  // Go Between Left And Right
+  SERVO_turn(0);
+  SERVO_turn(180);
+  SERVO_turn(45);
+  SERVO_turn(35);
+
+  // End Direction
+  SERVO_turn(90);
+
 }
 
 // Run Loop
@@ -70,23 +90,14 @@ int main()
 
   while(true)
   {
-    for(int i = 0; i<1;i++)
+    // Test Sensor    
+    for(int i = 1; i<100; i++)
     {
-      for(int j = 1; j<100;j++)      
-      {
-        switch (i)
-        {
-          case 0:
-            TEST_IR();          
-            break;
-          case 1:
-            TEST_FAN();
-            break;
-          default:
-            break;          
-        }
-      }    
+      TEST_IR(); 
     }
+    //Test Fan and Servo Motor
+    TEST_FAN();
+    TEST_SERVO();  
   }
 
   return 0;

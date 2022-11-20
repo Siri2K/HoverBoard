@@ -12,7 +12,7 @@
 
 // Defne Functions
 void FAN_init(); // Initalize Fans
-void DRIVE_FAN_PWR(int16_t power);
-void LIFT_FAN_PWR(bool fan_status);
+void DRIVE_FAN_pwr(int16_t power);
+void LIFT_FAN_pwr(bool fan_status);
 
 #endif

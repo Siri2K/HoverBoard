@@ -12,12 +12,12 @@ void FAN_init()
   TCCR0B |= ((1<<CS01)|(1<<CS00));  
 }
 
-void DRIVE_FAN_PWR(int16_t power)
+void DRIVE_FAN_pwr(int16_t power)
 {
   OCR0A = power;
 }
 
-void LIFT_FAN_PWR(bool fan_status)
+void LIFT_FAN_pwr(bool fan_status)
 {
   if(fan_status == true)
   {

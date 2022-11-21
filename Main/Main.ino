@@ -26,7 +26,7 @@ void TEST_IR()
     int distance[3];
     for(int i = 0; i<3;i++)
     {
-      distance[i] = *IR_Distance;
+      distance[i] = *(IR_Distance+i);
     }
 
     // Display Distances to UART

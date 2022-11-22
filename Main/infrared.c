@@ -26,7 +26,7 @@ float* IR_getVoltage()
   IR_readings = IR_getADC();
   for(int i = 0; i<3;i++)
   {
-    voltage_reading[i] = (*IR_readings)*(5.0/1023.0);
+    voltage_reading[i] = (*(IR_readings+i))*(5.0/1023.0);
   }
 
   return voltage_reading;
@@ -41,7 +41,7 @@ int* IR_getDistance()
   voltage_reading = IR_getVoltage();
   for(int i = 0; i<3; i++)
   {
-    obstacle_distance[i] = 29.988*(pow(*voltage_reading,-1.173));
+    obstacle_distance[i] = 29.988*(pow(*(voltage_reading+i),-1.173));
   }
   
   return obstacle_distance;

@@ -16,3 +16,4 @@ uint16_t readADC(uint8_t channel)
     while(ADCSRA & (1<<ADSC));
     return ADC; 
 }
+
